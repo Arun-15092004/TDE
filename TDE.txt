@@ -1,0 +1,31 @@
+USE master;
+GO
+CREATE MASTER KEY ENCRYPTION BY PASSWORD = 'Arun@2004';
+GO
+
+CREATE CERTIFICATE hof_cert
+WITH SUBJECT = 'My TDE Certificate';
+GO
+
+
+BACKUP CERTIFICATE hof_cert
+TO FILE = 'D:\DB_Encryption_Test\hof_cert.cer'
+WITH PRIVATE KEY (
+    FILE = 'D:\DB_Encryption_Test\hof_CertKey.pvk',
+    ENCRYPTION BY PASSWORD = 'Arun@1234'
+);
+GO
+
+USE HFSVP_ToClient_Test
+GO
+CREATE DATABASE ENCRYPTION KEY
+WITH ALGORITHM = AES_256 -- AES_256 is recommended
+ENCRYPTION BY SERVER CERTIFICATE hof_cert;
+GO
+
+ALTER DATABASE HFSVP_ToClient_Test
+SET ENCRYPTION ON;
+GO
+
+BACKUP DATABASE HFSVP_ToClient_Test
+TO DISK ='D:\DB_Encryption_Test\HFSVP_ToClient_Test_01.bak';
